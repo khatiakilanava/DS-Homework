@@ -17,6 +17,8 @@ score={} #here username and score will be stored
 sudoku = [] #here will be stored sudoku and player limits
 user={} #this dictionary contains game_id as key which correspondes to the players with their scores
 id=0 # game id , it will be increased as new games are created one by one
+#sudoku_generator=[]
+sudoku_answer={}
 # Requests --------------------------------------------------------------------
 # client requests
 __REQ_REG = '1'
@@ -73,24 +75,39 @@ def server_process(message):
     if message.startswith(__REQ_JOIN + MSG_SEP): #here is 2 step a) user wants to join existing game or b)creating new game
         msg=message[2:]
         split_msg=msg.split(',')
-        game_id=split_msg[0]
-        name=split_msg[1]
-        limit=split_msg[2]
-        difficulty=split_msg[3]
-        if game.has_key(game_id): #if user wants to join existing game
-            if(len(user)>limit):
+        var=split_msg[0]
+        if var.isdigit():
+             #if user wants to join existing game
+            game_id=int(var)
+            if(len(user)>game[game_id][1]):
                 return __RSP_JOINFAIL # limit is already reached at this game session
             user[game_id][name] =0 #otherwise user is registered to the wanted game session and started from the score 0.
             return __RSP_OK
         else:# else user wants to create new session
+            name = split_msg[0]
+            limit = split_msg[1]
+            difficulty = split_msg[2]
             id+=1 # game ides will start from 1
             str_id=str(id)
-            generated_sudoku=sudoku_generator.setup_sudoku(difficulty)
+            sudoku_answer, generated_sudoku=sudoku_generator.setup_sudoku(difficulty)
             sudoku.append(generated_sudoku)
             sudoku.append(limit)
             game[id]=sudoku
+            answers[id]=sudoku_answer
             return __MSG_SEP.join((__RSP_OK,)+str_id)
-       
+    if message.startswith(REQ_SUDOKU + MSG_SEP):
+        for key in game:
+
+
+
+
+
+    #if message.startswith(__REQ_USER + MSG_SEP):
+    #if message.startswith(__REQ_MOVE + MSG_SEP):
+    #    msg=message[2:]
+
+
+
 
 
 
